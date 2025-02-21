@@ -31,10 +31,9 @@ const server = createServer((req, res) => {
             getToReturn(`./index.html`, res);
             break;
 
-        case '/about.html':
-        case '/index.html':
-        case '/contact-me.html':
-            getToReturn(`.${pathname}`, res);
+        case '/about':
+        case '/contact-me':
+            getToReturn(`.${pathname}.html`, res);
             break;
 
         default:
