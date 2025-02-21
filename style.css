@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+body {
+    @apply bg-fuchsia-400 font-mono
+}
+
+header {
+    @apply w-full bg-stone-950 text-2xl text-fuchsia-50 p-5 text-center
+}
+
+h1, h2, h3, p {
+    @apply p-5
+}
+
+a {
+    @apply text-cyan-700 underline
+}
