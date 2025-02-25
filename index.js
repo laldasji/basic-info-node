@@ -1,48 +1,34 @@
-import { createServer } from 'node:http';
-import { URL } from 'node:url';
-import fs from 'node:fs';
+import e from "express";
+import path from "path";
+const app = e();
 
 const port = 8069;
 
-function getToReturn(path, res, contentType = 'text/html') {
-    fs.readFile(path, (err, data) => {
+const ROOT_DIR = process.cwd();
+
+app.use(e.static(path.join(ROOT_DIR, '/static'))); // express directly sends static resources from this path
+
+const sendHTMLFile = (fileName, res) => {
+    res.sendFile(path.join(ROOT_DIR, fileName), err => {
         if (err) {
-            res.writeHead(500);
-            return res.end('uhm, error?');
+            res.status(500).send('Error sending file');
         }
-        res.writeHead(200, { 'Content-type' : contentType });
-        res.write(data);
-        res.end();
-    })
-}
+    });
+};
 
-const server = createServer((req, res) => {
-    const pathname = req.url.split('?')[0];
+app.get('/', (req, res) => sendHTMLFile('index.html', res));
+app.get('/contact-me', (req, res) => sendHTMLFile('contact-me.html', res));
+app.get('/about', (req, res) => sendHTMLFile('about.html', res));
 
-    console.log(pathname);
-    if (pathname.endsWith('.css')) {
-        return getToReturn(`.${pathname}`, res, 'text/css');
-    } else if (pathname.endsWith('.ico')) {
-        return getToReturn(`.${pathname}`, res, 'image/x-icon');
-    }
-
-    switch (pathname) {
-        case '/':
-            getToReturn(`./index.html`, res);
-            break;
-
-        case '/about':
-        case '/contact-me':
-            getToReturn(`.${pathname}.html`, res);
-            break;
-
-        default:
-            res.statusCode = 404;
-            getToReturn(`./404.html`, res);
-            break;
-    }
+// using 
+app.use((req, res) => {
+    res.status(404).sendFile(path.resolve(ROOT_DIR, "404.html"), err => {
+        if (err) {
+            res.status(400).send('File not found!');
+        }
+    });
 });
 
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server running at http://127.0.0.1:${port}`);
 })
